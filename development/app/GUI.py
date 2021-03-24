@@ -1,53 +1,94 @@
 import tkinter
 
-class imageGroupingApp(tkinter.Tk):
-   
+class ImageGroupingapp(tkinter.Tk):
+    #initalise variables in the class
     def __init__(self, *args, **kwargs):
-        
-        tk.Tk.__init__(self, *args, **kwargs)
-        
+        #initalise tkinter
+        tkinter.Tk.__init__(self,*args,**kwargs)
+        #creating a frame to contain everything in the app
         container = tkinter.Frame(self)
+        #declaring the position of the frame
+        container.pack(fill="both",expand = True)
         
-        # initializing frames to an empty array
-        self.frames = {}  
-  
-        # iterating through a tuple consisting
-        # of the different page layouts
-        for F in (MainMenu, RecentlyAdded):
-  
-            frame = F(container, self)
-  
-            # initializing frame of that object from
-            # startpage, page1, page2 respectively with 
-            # for loop
-            self.frames[F] = frame 
-  
-            frame.grid(row = 0, column = 0, sticky ="nsew")
-  
-        self.show_frame(MainMenu)
-    
-    def show_frame(self, cont):
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+
+        #specifing a dictionary that contains all the frames
+        self.frames = {}
+
+        for F in (SplashScreenFrame, MainMenuFrame,SearchFolderFrame):
+            #setting frame to the first frame the user sees
+            frame = F(container,self)
+
+            self.frames[F] = frame
+            #sticky is used for alinment
+            frame.grid(row=0, column=0, sticky="nsew")
+
+        self.show_frame(SplashScreenFrame)
+
+    #creating a method to show frames
+    def show_frame(self,cont):
         frame = self.frames[cont]
         frame.tkraise()
 
 
-window =tkinter.Tk()
-window.title("Object Detection and Sorting")
-window.geometry('700x500')
+class SplashScreenFrame(tkinter.Frame):
 
-mainMenuFrame = tkinter.Frame(window)
-mainMenuFrame.pack()
+    def __init__(self,parent, controller):
+        tkinter.Frame.__init__(self,parent)
+        label = tkinter.Label(self, text= "Welcome to the Image Grouping Application")
+        label.pack()
 
-def searchFolder():
-    searchWindowFrame = tkinter.Frame(window)
-    searchWindowFrame.pack()
-    searchWindowFrame.tkraise()
-    mainMenu = tkinter.Label(searchWindowFrame,text="Hello")
-    
-mainMenu = tkinter.Label(mainMenuFrame,text="Main Menu")
-recent = tkinter.Button(mainMenuFrame, text = 'Recently Added',bg="black",fg='black')
-search = tkinter.Button(mainMenuFrame, text = 'Search Folder',command = searchFolder)
-mainMenu.grid(column = 5, row = 1)
-recent.grid(column = 1, row = 5)
-search.grid(column = 10, row = 5)
-window.mainloop()
+        startBtn = tkinter.Button(self, text="Start App",
+                                 command=lambda: controller.show_frame(MainMenuFrame))
+        startBtn.pack()
+
+
+class MainMenuFrame(tkinter.Frame):
+    def __init__(self,parent, controller):
+        tkinter.Frame.__init__(self,parent)
+        
+        #creating a text that says Main Menu
+        mainMenuLabel = tkinter.Label(self, text= "Main Menu")
+        mainMenuLabel.pack()
+        #creating a recently added button
+        recentlyAddedBtn = tkinter.Button(self, text="Recently Added Images")
+        recentlyAddedBtn.pack()
+        #creating a search button for searching in folders
+        searchFolderBtn = tkinter.Button(self,text="Search Folder",
+                                        command=lambda: controller.show_frame(SearchFolderFrame))
+        searchFolderBtn.pack()
+
+class RecentlyAddedFrame(tkinter.Frame):
+    def __init__(self,parent, controller):
+        tkinter.Frame.__init__(self,parent)
+
+
+class SearchFolderFrame(tkinter.Frame):
+    def __init__(self,parent, controller):
+        tkinter.Frame.__init__(self,parent)
+
+        selectFolderLabel = tkinter.Label(self, text = "Select Folder:")
+        selectFolderLabel.grid(row=0,column=0)
+        selectFolderLabel.columnconfigure(1,weight=1)
+        selectFolderLabel.rowconfigure(1,weight=1)
+
+        thresholdLabel = tkinter.Label(self, text = "Threshold(%):")
+        thresholdLabel.grid(row=1,column=0)
+        thresholdLabel.columnconfigure(1,weight=1)
+        thresholdLabel.rowconfigure(1,weight=1)
+
+        featuresLabel = tkinter.Label(self, text = "Features:")
+        featuresLabel.grid(row=2,column=0)
+        featuresLabel.columnconfigure(1,weight=1)
+        featuresLabel.rowconfigure(1,weight=1)
+
+        searchBtn = tkinter.Button(self,text="Search")
+        searchBtn.grid(row=3,column=1)
+        searchBtn.columnconfigure(1,weight=1)
+        searchBtn.rowconfigure(1,weight=1)
+
+app = ImageGroupingapp()
+app.title("Image Grouping")
+app.geometry('700x500')
+app.mainloop()
