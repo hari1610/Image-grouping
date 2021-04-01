@@ -1,4 +1,5 @@
 import tkinter
+import tkinter.filedialog
 
 class ImageGroupingapp(tkinter.Tk):
     #initalise variables in the class
@@ -62,11 +63,19 @@ class MainMenuFrame(tkinter.Frame):
 class RecentlyAddedFrame(tkinter.Frame):
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
-
+    
 
 class SearchFolderFrame(tkinter.Frame):
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
+        
+        filename = tkinter.StringVar()
+
+        def select_folder():
+            filePath = tkinter.filedialog.askdirectory()
+            filename.set(filePath)
+            print(filePath)
+            
 
         selectFolderLabel = tkinter.Label(self, text = "Select Folder:")
         selectFolderLabel.grid(row=0,column=0)
@@ -87,6 +96,16 @@ class SearchFolderFrame(tkinter.Frame):
         searchBtn.grid(row=3,column=1)
         searchBtn.columnconfigure(1,weight=1)
         searchBtn.rowconfigure(1,weight=1)
+
+        selectFolderBtn = tkinter.Button(self,text="...",command = select_folder)
+        selectFolderBtn.grid(row=0,column=2)
+        selectFolderBtn.columnconfigure(1,weight=1)
+        selectFolderBtn.rowconfigure(1,weight=1)
+
+        folderPathLabel = tkinter.Label(self, textvariable = filename)
+        folderPathLabel.grid(row=0,column=1)
+        folderPathLabel.columnconfigure(1,weight=1)
+        folderPathLabel.rowconfigure(1,weight=1)
 
 app = ImageGroupingapp()
 app.title("Image Grouping")
