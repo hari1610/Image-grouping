@@ -1,7 +1,9 @@
 import tkinter
 import tkinter.filedialog
+import os
 
-class ImageGroupingapp(tkinter.Tk):
+
+class ImageGroupingApp(tkinter.Tk):
     #initalise variables in the class
     def __init__(self, *args, **kwargs):
         #initalise tkinter
@@ -17,7 +19,7 @@ class ImageGroupingapp(tkinter.Tk):
         #specifing a dictionary that contains all the frames
         self.frames = {}
 
-        for F in (SplashScreenFrame, MainMenuFrame,SearchFolderFrame):
+        for F in (SplashScreenFrame, MainMenuFrame,SearchFolderFrame,ResultFrame):
             #setting frame to the first frame the user sees
             frame = F(container,self)
 
@@ -69,13 +71,15 @@ class SearchFolderFrame(tkinter.Frame):
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
         
-        filename = tkinter.StringVar()
+        self.filename = tkinter.StringVar()
 
         def select_folder():
             filePath = tkinter.filedialog.askdirectory()
-            filename.set(filePath)
-            print(filePath)
-            
+            self.filename.set(filePath)
+            #print(filePath)
+
+        def get_filename():
+            return self.filename
 
         selectFolderLabel = tkinter.Label(self, text = "Select Folder:")
         selectFolderLabel.grid(row=0,column=0)
@@ -92,7 +96,8 @@ class SearchFolderFrame(tkinter.Frame):
         featuresLabel.columnconfigure(1,weight=1)
         featuresLabel.rowconfigure(1,weight=1)
 
-        searchBtn = tkinter.Button(self,text="Search")
+        searchBtn = tkinter.Button(self,text="Search",
+                                   command=lambda: controller.show_frame(ResultFrame))
         searchBtn.grid(row=3,column=1)
         searchBtn.columnconfigure(1,weight=1)
         searchBtn.rowconfigure(1,weight=1)
@@ -102,12 +107,61 @@ class SearchFolderFrame(tkinter.Frame):
         selectFolderBtn.columnconfigure(1,weight=1)
         selectFolderBtn.rowconfigure(1,weight=1)
 
-        folderPathLabel = tkinter.Label(self, textvariable = filename)
+        folderPathLabel = tkinter.Label(self, textvariable = self.filename)
         folderPathLabel.grid(row=0,column=1)
         folderPathLabel.columnconfigure(1,weight=1)
         folderPathLabel.rowconfigure(1,weight=1)
 
-app = ImageGroupingapp()
+
+class ResultFrame(tkinter.Frame):
+    def __init__(self,parent, controller):
+        tkinter.Frame.__init__(self,parent)
+
+        p1 = SearchFolderFrame(parent, controller)
+        self.path = p1.filename
+       # self.path.set(p1.filename)
+        print(self.path)
+
+        pathLabel = tkinter.Label(self, text = self.path)
+        pathLabel.grid(row=0,column=1)
+        pathLabel.columnconfigure(1,weight=1)
+        pathLabel.rowconfigure(1,weight=1)
+
+        # def path_reload():
+        #     upText = p1.filename.get()
+        #     pathLabel.configure(text = upText)
+        #     pathLabel.after(400,path_reload)
+        
+        # path_reload()
+        
+        
+
+        # file_dir = controller.frame["SearchFolderFrame"].get_filename()
+        # print(file_dir)
+
+       # for images in os.listdir(file_dir):
+    
+    
+class Model():
+    import torch
+    import torchvision
+    from torchvision import models
+    import torchvision.transforms as transforms
+    import numpy as np
+    import torch.nn.functional as F
+    import matplotlib.pyplot as plt
+    import urllib
+    from PIL import Image
+
+    PATH = "/Users/hari/Desktop/image grouping/FRCNN.pth"
+    model = torch.load(PATH)
+    model.eval()
+    
+    
+    
+
+
+app = ImageGroupingApp()
 app.title("Image Grouping")
 app.geometry('700x500')
 app.mainloop()
