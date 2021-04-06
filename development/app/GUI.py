@@ -26,12 +26,15 @@ class ImageGroupingApp(tkinter.Tk):
             self.frames[F] = frame
             #sticky is used for alinment
             frame.grid(row=0, column=0, sticky="nsew")
-
+            
+        
+        
         self.show_frame(SplashScreenFrame)
-
+        
     #creating a method to show frames
     def show_frame(self,cont):
         frame = self.frames[cont]
+        
         frame.tkraise()
 
 
@@ -81,6 +84,10 @@ class SearchFolderFrame(tkinter.Frame):
         def get_filename():
             return self.filename
 
+        def searchBtn():
+            self.path = self.filename
+            controller.show_frame(ResultFrame)
+
         selectFolderLabel = tkinter.Label(self, text = "Select Folder:")
         selectFolderLabel.grid(row=0,column=0)
         selectFolderLabel.columnconfigure(1,weight=1)
@@ -116,13 +123,13 @@ class SearchFolderFrame(tkinter.Frame):
 class ResultFrame(tkinter.Frame):
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
-
-        p1 = SearchFolderFrame(parent, controller)
+        #self.path = tkinter.StringVar()
+        p1 = controller.frames[SearchFolderFrame]
         self.path = p1.filename
-       # self.path.set(p1.filename)
+        
         print(self.path)
 
-        pathLabel = tkinter.Label(self, text = self.path)
+        pathLabel = tkinter.Label(self, textvariable = self.path)
         pathLabel.grid(row=0,column=1)
         pathLabel.columnconfigure(1,weight=1)
         pathLabel.rowconfigure(1,weight=1)
@@ -153,11 +160,27 @@ class Model():
     import urllib
     from PIL import Image
 
+    
+    # imgDir = ""
+    # def transformImg():
+    #     transform = transforms.Compose([transforms.ToTensor()])
+
+    # def set_ImgPath(imgPath):
+    #     imgDir = imgPath
+    
     PATH = "/Users/hari/Desktop/image grouping/FRCNN.pth"
+    
     model = torch.load(PATH)
     model.eval()
     
-    
+    imgs = []
+# path = "/Users/hari/Desktop/image grouping/images"
+# valid_images = [".jpg",".gif",".png",".jpeg"]
+# for f in os.listdir(path):
+#     ext = os.path.splitext(f)[1]
+#     if ext.lower() not in valid_images:
+#         continue
+    # imgs.append(Image.open(os.path.join(path,f)))
     
 
 
