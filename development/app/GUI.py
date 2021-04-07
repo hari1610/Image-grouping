@@ -18,6 +18,7 @@ class ImageGroupingApp(tkinter.Tk):
 
         #specifing a dictionary that contains all the frames
         self.frames = {}
+        self.visible =tkinter.StringVar()
 
         for F in (SplashScreenFrame, MainMenuFrame,SearchFolderFrame,ResultFrame):
             #setting frame to the first frame the user sees
@@ -34,7 +35,7 @@ class ImageGroupingApp(tkinter.Tk):
     #creating a method to show frames
     def show_frame(self,cont):
         frame = self.frames[cont]
-        
+        self.visible.set(frame)
         frame.tkraise()
 
 
@@ -75,6 +76,7 @@ class SearchFolderFrame(tkinter.Frame):
         tkinter.Frame.__init__(self,parent)
         
         self.filename = tkinter.StringVar()
+        self.features = []
 
         def select_folder():
             filePath = tkinter.filedialog.askdirectory()
@@ -87,6 +89,17 @@ class SearchFolderFrame(tkinter.Frame):
         def searchBtn():
             self.path = self.filename
             controller.show_frame(ResultFrame)
+
+        def checkboxSelection():
+            #print("hello")
+            if(personVar.get() == 1) & (carVar.get() == 0) & (dogVar.get() == 0) & (catVar.get() == 0):
+                print("person")
+            elif(personVar.get() == 0) & (carVar.get() == 1) & (dogVar.get() == 0) & (catVar.get() == 0):
+                print("car")
+            elif(personVar.get() == 0) & (carVar.get() == 0) & (dogVar.get() == 1) & (catVar.get() == 0):
+                print("dog")
+            elif(personVar.get() == 0) & (carVar.get() == 0) & (dogVar.get() == 0) & (catVar.get() == 1):
+                print("cat")
 
         selectFolderLabel = tkinter.Label(self, text = "Select Folder:")
         selectFolderLabel.grid(row=0,column=0)
@@ -119,37 +132,67 @@ class SearchFolderFrame(tkinter.Frame):
         folderPathLabel.columnconfigure(1,weight=1)
         folderPathLabel.rowconfigure(1,weight=1)
 
+        personVar = tkinter.IntVar()
+        carVar = tkinter.IntVar()
+        dogVar = tkinter.IntVar()
+        catVar = tkinter.IntVar()
+        personCb = tkinter.Checkbutton(self, text='Person',variable=personVar, onvalue=1, offvalue=0, command=checkboxSelection)
+        carCb = tkinter.Checkbutton(self, text='Car',variable=carVar, onvalue=1, offvalue=0, command=checkboxSelection)
+        dogCb = tkinter.Checkbutton(self, text='Dog',variable=dogVar, onvalue=1, offvalue=0, command=checkboxSelection)
+        catCb = tkinter.Checkbutton(self, text='Cat',variable=catVar, onvalue=1, offvalue=0, command=checkboxSelection)
+        personCb.grid(row=2,column=1)
+        carCb.grid(row=2,column=2)
+        dogCb.grid(row=2,column=3)
+        catCb.grid(row=2,column=4)
+
+        thresholdVar = tkinter.IntVar()
+        thresholdVar.set(0.7) # default value
+
+        thresholdSelection = tkinter.OptionMenu(self, thresholdVar, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
+        thresholdSelection.grid(row = 1, column = 1)
+
+        testinglabel = tkinter.Label(self, textvariable = thresholdVar)
+        testinglabel.grid(row = 4, column = 4)
+
 
 class ResultFrame(tkinter.Frame):
+    
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
         #self.path = tkinter.StringVar()
         p1 = controller.frames[SearchFolderFrame]
         self.path = p1.filename
-        
-        print(self.path)
+        if(controller.visible == 'SplashScreenFrame'):
+            print(self.path)
+        else:
+            print("different frame")
+            print(controller.visible)
 
         pathLabel = tkinter.Label(self, textvariable = self.path)
         pathLabel.grid(row=0,column=1)
         pathLabel.columnconfigure(1,weight=1)
         pathLabel.rowconfigure(1,weight=1)
 
-        # def path_reload():
-        #     upText = p1.filename.get()
-        #     pathLabel.configure(text = upText)
-        #     pathLabel.after(400,path_reload)
-        
-        # path_reload()
         
         
+        # button1 = tkinter.Button(self, text="click", command=sayhello())
+        # button1.grid(row=0,column=2)
+        # button1.columnconfigure(1,weight=1)
+        # button1.rowconfigure(1,weight=1)
+
+        
+
+
 
         # file_dir = controller.frame["SearchFolderFrame"].get_filename()
         # print(file_dir)
 
        # for images in os.listdir(file_dir):
+    # def sayhello(self):
+    #     return print("hello")
     
     
-class Model():
+class Model:
     import torch
     import torchvision
     from torchvision import models
@@ -160,20 +203,22 @@ class Model():
     import urllib
     from PIL import Image
 
-    
-    # imgDir = ""
-    # def transformImg():
-    #     transform = transforms.Compose([transforms.ToTensor()])
+#    # def __init__(self,transforms):
+        
+#     imgDir = ""
+#     def transformImg(transforms):
+#         transform = transforms.Compose([transforms.ToTensor()])
 
-    # def set_ImgPath(imgPath):
-    #     imgDir = imgPath
+#     def set_ImgPath(self,imgPath):
+#         imgDir = imgPath
     
-    PATH = "/Users/hari/Desktop/image grouping/FRCNN.pth"
+#     PATH = "/Users/hari/Desktop/image grouping/FRCNN.pth"
     
-    model = torch.load(PATH)
-    model.eval()
-    
-    imgs = []
+#     model = torch.load(PATH)
+#     model.eval()
+#     print(model)
+#     print(imgDir)
+#     imgs = []
 # path = "/Users/hari/Desktop/image grouping/images"
 # valid_images = [".jpg",".gif",".png",".jpeg"]
 # for f in os.listdir(path):
