@@ -38,17 +38,20 @@ model.eval()
 print(model)
 print(imgDir)
 files = []
-imgs = []
+#imgs = []
 feature = 'dog'
 
-path = "/Users/hari/Desktop/image grouping/images"
-valid_images = [".jpg",".gif",".png",".jpeg"]
-for f in os.listdir(path):
-    files.append(os.path.join(path,f))
-    ext = os.path.splitext(f)[1]
-    if ext.lower() not in valid_images:
-        continue
-    imgs.append(Image.open(os.path.join(path,f)))
+pathrere = "/Users/hari/Desktop/image grouping/images"
+#valid_images = [".jpg",".gif",".png",".jpeg"]
+def load_images(path,valid_images = [".jpg",".gif",".png",".jpeg"]):
+    imgs = []
+    for f in os.listdir(path):
+        files.append(os.path.join(path,f))
+        ext = os.path.splitext(f)[1]
+        if ext.lower() not in valid_images:
+            continue
+        imgs.append(Image.open(os.path.join(path,f)))
+    return imgs
 # print(len(imgs))
 # for i in range(len(imgs)):
 #     imgplot = plt.imshow(imgs[i])
@@ -72,19 +75,25 @@ def predict(imgs,feat,threshold=0.7):
         #print(pred_score)
         for t in range(len(pred_class)):
             #print(pred_class[t], pred_score[t])
-            if(pred_class[t]==feat):
-                print("dog found")
+            #print(pred_class)
+            if(pred_class[t]==feat) & (pred_score[t] >= threshold):
+                print(pred_class[t], pred_score[t])
+                print("feature found")
                 #pic = Image.open(files[i])
                 pather.append(files[i])
                 print(pather)
                 #plt.imshow(pic)
                 #plt.show()
-            #return pred_class,pred_score
+                #return pred_class,pred_score
+                break
 
         print("next image")
         if(i == (len(imgs)-1)):
             return pather
 
-get = predict(imgs,feature)
-print(get)
+#get = predict(imgs,feature)
+#print(get)
 #print(pather)
+
+#a = load_images(pathrere)
+#print(len(a))

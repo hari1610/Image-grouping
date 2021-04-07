@@ -1,6 +1,7 @@
 import tkinter
 import tkinter.filedialog
 import os
+import model
 
 
 class ImageGroupingApp(tkinter.Tk):
@@ -76,7 +77,8 @@ class SearchFolderFrame(tkinter.Frame):
         tkinter.Frame.__init__(self,parent)
         
         self.filename = tkinter.StringVar()
-        self.features = []
+        self.features = ''
+        self.finalImages = []
 
         def select_folder():
             filePath = tkinter.filedialog.askdirectory()
@@ -87,19 +89,31 @@ class SearchFolderFrame(tkinter.Frame):
             return self.filename
 
         def searchBtn():
-            self.path = self.filename
+            file = self.filename.get()
+            thres =float(thresholdVar.get())
+            #print(thresholdVar.get())
+            print(thres)
+            photos = model.load_images(file)
+            answersPath = model.predict(photos,self.features,thres)
+            print('success')
+            print(answersPath)
+            self.finalImages = answersPath
             controller.show_frame(ResultFrame)
 
         def checkboxSelection():
             #print("hello")
             if(personVar.get() == 1) & (carVar.get() == 0) & (dogVar.get() == 0) & (catVar.get() == 0):
-                print("person")
+                self.features = 'person'
+                print(self.features)
             elif(personVar.get() == 0) & (carVar.get() == 1) & (dogVar.get() == 0) & (catVar.get() == 0):
-                print("car")
+                self.features = 'car'
+                print(self.features)
             elif(personVar.get() == 0) & (carVar.get() == 0) & (dogVar.get() == 1) & (catVar.get() == 0):
-                print("dog")
+                self.features = 'dog'
+                print(self.features)
             elif(personVar.get() == 0) & (carVar.get() == 0) & (dogVar.get() == 0) & (catVar.get() == 1):
-                print("cat")
+                self.features = 'cat'
+                print(self.features)
 
         selectFolderLabel = tkinter.Label(self, text = "Select Folder:")
         selectFolderLabel.grid(row=0,column=0)
@@ -117,7 +131,7 @@ class SearchFolderFrame(tkinter.Frame):
         featuresLabel.rowconfigure(1,weight=1)
 
         searchBtn = tkinter.Button(self,text="Search",
-                                   command=lambda: controller.show_frame(ResultFrame))
+                                   command=searchBtn)
         searchBtn.grid(row=3,column=1)
         searchBtn.columnconfigure(1,weight=1)
         searchBtn.rowconfigure(1,weight=1)
@@ -145,7 +159,7 @@ class SearchFolderFrame(tkinter.Frame):
         dogCb.grid(row=2,column=3)
         catCb.grid(row=2,column=4)
 
-        thresholdVar = tkinter.IntVar()
+        thresholdVar = tkinter.StringVar()
         thresholdVar.set(0.7) # default value
 
         thresholdSelection = tkinter.OptionMenu(self, thresholdVar, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
@@ -160,18 +174,23 @@ class ResultFrame(tkinter.Frame):
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
         #self.path = tkinter.StringVar()
-        p1 = controller.frames[SearchFolderFrame]
-        self.path = p1.filename
+        
         if(controller.visible == 'SplashScreenFrame'):
             print(self.path)
         else:
             print("different frame")
             print(controller.visible)
-
-        pathLabel = tkinter.Label(self, textvariable = self.path)
+        def refresh():
+            p1 = controller.frames[SearchFolderFrame]
+            self.path = p1.finalImages
+            pathLabel.config(text=("\n".join(self.path)))
+        pathLabel = tkinter.Label(self, text = "hello")
         pathLabel.grid(row=0,column=1)
         pathLabel.columnconfigure(1,weight=1)
         pathLabel.rowconfigure(1,weight=1)
+
+        refreshbtn = tkinter.Button(self, text = "refresh", command = refresh)
+        refreshbtn.grid(row = 2, column = 2)
 
         
         
