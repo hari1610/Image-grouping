@@ -2,7 +2,8 @@ import tkinter
 import tkinter.filedialog
 import os
 import model
-
+from PIL import Image,ImageTk
+import subprocess
 
 class ImageGroupingApp(tkinter.Tk):
     #initalise variables in the class
@@ -174,23 +175,52 @@ class ResultFrame(tkinter.Frame):
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
         #self.path = tkinter.StringVar()
+        print(os.name)
         
         if(controller.visible == 'SplashScreenFrame'):
             print(self.path)
         else:
             print("different frame")
             print(controller.visible)
+        photos = []
+        def open_image(imagePath):
+            if os.name == 'posix':
+                #rwre = ('"%s"' % imagePath)
+                #subprocess.call(['/usr/bin/open' ,rwre])
+                subprocess.run(['open', imagePath])
+            elif os.name == 'win32' :
+                subprocess.run(['explorer', imagePath])
+        def displayImg(img):
+            image = Image.open(img)
+            image = image.resize((100,100))
+            photo = ImageTk.PhotoImage(image)
+            photos.append(photo)
+            #newPhoto_label = tkinter.Label(self,image=photo)
+            #newPhoto_label.pack()
+            newBtn = tkinter.Button(self,image = photo, command = lambda: open_image(img))
+            newBtn.pack()
+
         def refresh():
             p1 = controller.frames[SearchFolderFrame]
             self.path = p1.finalImages
-            pathLabel.config(text=("\n".join(self.path)))
-        pathLabel = tkinter.Label(self, text = "hello")
-        pathLabel.grid(row=0,column=1)
-        pathLabel.columnconfigure(1,weight=1)
-        pathLabel.rowconfigure(1,weight=1)
+            #images = Image.open(self.path[0])
+            #photo = ImageTk.PhotoImage(images)
+            #pathLabel.config(text=("\n".join(self.path)))
+            #pathLabel.config(image = photo)
+            for directories in self.path:
+                 displayImg(directories)
+                 print('success')
+       # ghghf = Image.open('/Users/hari/Desktop/image grouping/images/newimage.jpeg')
+        #jyttj = ImageTk.PhotoImage(ghghf)
+        #pathLabel = tkinter.Label(self, image = jyttj )
+        #pathLabel.grid(row=0,column=1)
+        #pathLabel.pack()
+        #pathLabel.columnconfigure(1,weight=1)
+        #pathLabel.rowconfigure(1,weight=1)
 
         refreshbtn = tkinter.Button(self, text = "refresh", command = refresh)
-        refreshbtn.grid(row = 2, column = 2)
+        #refreshbtn.grid(row = 2, column = 2)
+        refreshbtn.pack()
 
         
         
