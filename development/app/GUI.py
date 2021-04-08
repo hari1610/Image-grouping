@@ -4,6 +4,7 @@ import os
 import model
 from PIL import Image,ImageTk
 import subprocess
+from tkinter import ttk
 
 class ImageGroupingApp(tkinter.Tk):
     #initalise variables in the class
@@ -47,6 +48,13 @@ class SplashScreenFrame(tkinter.Frame):
         tkinter.Frame.__init__(self,parent)
         label = tkinter.Label(self, text= "Welcome to the Image Grouping Application")
         label.pack()
+        filename = tkinter.StringVar()
+        def select_folder():
+            filepath = tkinter.filedialog.askdirectory()
+            filename.set(filepath)
+        
+        searchBtn = tkinter.Button(self,text= "Please Select a Default Folder to Search", command = select_folder)
+        searchBtn.pack()
 
         startBtn = tkinter.Button(self, text="Start App",
                                  command=lambda: controller.show_frame(MainMenuFrame))
@@ -197,7 +205,7 @@ class ResultFrame(tkinter.Frame):
             photos.append(photo)
             #newPhoto_label = tkinter.Label(self,image=photo)
             #newPhoto_label.pack()
-            newBtn = tkinter.Button(self,image = photo, command = lambda: open_image(img))
+            newBtn = tkinter.Button(secondFrame,image = photo, command = lambda: open_image(img))
             newBtn.pack()
 
         def refresh():
@@ -218,7 +226,25 @@ class ResultFrame(tkinter.Frame):
         #pathLabel.columnconfigure(1,weight=1)
         #pathLabel.rowconfigure(1,weight=1)
 
-        refreshbtn = tkinter.Button(self, text = "refresh", command = refresh)
+
+        my_canvas = tkinter.Canvas(self)
+        my_canvas.pack(side=tkinter.LEFT,fill=tkinter.BOTH, expand = 1)
+
+
+        my_scrollbar = ttk.Scrollbar(self,orient = tkinter.VERTICAL, command=my_canvas.yview)
+        my_scrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y)
+
+
+        my_canvas.configure(yscrollcommand=my_scrollbar.set)
+        my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion = my_canvas.bbox("all")))
+
+
+        secondFrame = tkinter.Frame(my_canvas)
+
+        my_canvas.create_window((0,0),window = secondFrame, anchor="nw")
+
+
+        refreshbtn = tkinter.Button(secondFrame, text = "refresh", command = refresh)
         #refreshbtn.grid(row = 2, column = 2)
         refreshbtn.pack()
 
