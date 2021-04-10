@@ -48,17 +48,24 @@ class SplashScreenFrame(tkinter.Frame):
         tkinter.Frame.__init__(self,parent)
         label = tkinter.Label(self, text= "Welcome to the Image Grouping Application")
         label.pack()
-        filename = tkinter.StringVar()
-        def select_folder():
-            filepath = tkinter.filedialog.askdirectory()
-            filename.set(filepath)
         
-        searchBtn = tkinter.Button(self,text= "Please Select a Default Folder to Search", command = select_folder)
-        searchBtn.pack()
+        
+        
+        self.searchBtn = tkinter.Button(self,text= "Please Select a Default Folder to Search", command = self.select_folder)
+        self.searchBtn.pack()
 
-        startBtn = tkinter.Button(self, text="Start App",
+        self.startBtn = tkinter.Button(self, text="Start App",
                                  command=lambda: controller.show_frame(MainMenuFrame))
-        startBtn.pack()
+        self.startBtn.pack()
+    
+    def select_folder(self):
+            filepath = tkinter.filedialog.askdirectory()
+            a = str(filepath)
+            print(a)
+            f = open("pathway.txt","w")
+            f.write(str(a))
+            f.close()
+            print("created file")
 
 
 class MainMenuFrame(tkinter.Frame):
@@ -266,41 +273,6 @@ class ResultFrame(tkinter.Frame):
     # def sayhello(self):
     #     return print("hello")
     
-    
-class Model:
-    import torch
-    import torchvision
-    from torchvision import models
-    import torchvision.transforms as transforms
-    import numpy as np
-    import torch.nn.functional as F
-    import matplotlib.pyplot as plt
-    import urllib
-    from PIL import Image
-
-#    # def __init__(self,transforms):
-        
-#     imgDir = ""
-#     def transformImg(transforms):
-#         transform = transforms.Compose([transforms.ToTensor()])
-
-#     def set_ImgPath(self,imgPath):
-#         imgDir = imgPath
-    
-#     PATH = "/Users/hari/Desktop/image grouping/FRCNN.pth"
-    
-#     model = torch.load(PATH)
-#     model.eval()
-#     print(model)
-#     print(imgDir)
-#     imgs = []
-# path = "/Users/hari/Desktop/image grouping/images"
-# valid_images = [".jpg",".gif",".png",".jpeg"]
-# for f in os.listdir(path):
-#     ext = os.path.splitext(f)[1]
-#     if ext.lower() not in valid_images:
-#         continue
-    # imgs.append(Image.open(os.path.join(path,f)))
     
 
 
