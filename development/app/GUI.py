@@ -5,6 +5,7 @@ import model
 from PIL import Image,ImageTk
 import subprocess
 from tkinter import ttk
+import fileMonitor
 
 class ImageGroupingApp(tkinter.Tk):
     #initalise variables in the class
@@ -23,7 +24,7 @@ class ImageGroupingApp(tkinter.Tk):
         self.frames = {}
         self.visible =tkinter.StringVar()
 
-        for F in (SplashScreenFrame, MainMenuFrame,SearchFolderFrame,ResultFrame):
+        for F in (SplashScreenFrame, MainMenuFrame,SearchFolderFrame,ResultFrame,RecentlyAddedFrame,Car,Dog,Cat,Person):
             #setting frame to the first frame the user sees
             frame = F(container,self)
 
@@ -76,7 +77,8 @@ class MainMenuFrame(tkinter.Frame):
         mainMenuLabel = tkinter.Label(self, text= "Main Menu")
         mainMenuLabel.pack()
         #creating a recently added button
-        recentlyAddedBtn = tkinter.Button(self, text="Recently Added Images")
+        recentlyAddedBtn = tkinter.Button(self, text="Recently Added Images",
+                                             command = lambda: controller.show_frame(RecentlyAddedFrame))
         recentlyAddedBtn.pack()
         #creating a search button for searching in folders
         searchFolderBtn = tkinter.Button(self,text="Search Folder",
@@ -87,10 +89,33 @@ class RecentlyAddedFrame(tkinter.Frame):
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
     
+        backBtn = tkinter.Button(self,text="Back",command=lambda:controller.show_frame(MainMenuFrame))
+        backBtn.pack(side = tkinter.TOP,anchor="nw")
+
+        homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
+        homeBtn.pack(side =tkinter.TOP,anchor="ne")
+
+        dogsBtn = tkinter.Button(self, text="Dogs",command=lambda:controller.show_frame(Dog))
+        dogsBtn.pack()
+
+        catsBtn = tkinter.Button(self, text="Cats",command=lambda:controller.show_frame(Cat))
+        catsBtn.pack()
+
+        carsBtn = tkinter.Button(self, text="Cars",command=lambda:controller.show_frame(Car))
+        carsBtn.pack()
+
+        personsBtn = tkinter.Button(self, text="People",command=lambda:controller.show_frame(Dog))
+        personsBtn.pack()
 
 class SearchFolderFrame(tkinter.Frame):
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
+
+        # backBtn = tkinter.Button(self,text="Back",command=lambda:controller.show_frame(MainMenuFrame))
+        # backBtn.pack(side = tkinter.TOP,anchor="nw")
+
+        # homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
+        # homeBtn.pack(side =tkinter.TOP,anchor="ne")
         
         self.filename = tkinter.StringVar()
         self.features = ''
@@ -104,32 +129,8 @@ class SearchFolderFrame(tkinter.Frame):
         def get_filename():
             return self.filename
 
-        def searchBtn():
-            file = self.filename.get()
-            thres =float(thresholdVar.get())
-            #print(thresholdVar.get())
-            print(thres)
-            photos = model.load_images(file)
-            answersPath = model.predict(photos,self.features,thres)
-            print('success')
-            print(answersPath)
-            self.finalImages = answersPath
-            controller.show_frame(ResultFrame)
-
-        def checkboxSelection():
-            #print("hello")
-            if(personVar.get() == 1) & (carVar.get() == 0) & (dogVar.get() == 0) & (catVar.get() == 0):
-                self.features = 'person'
-                print(self.features)
-            elif(personVar.get() == 0) & (carVar.get() == 1) & (dogVar.get() == 0) & (catVar.get() == 0):
-                self.features = 'car'
-                print(self.features)
-            elif(personVar.get() == 0) & (carVar.get() == 0) & (dogVar.get() == 1) & (catVar.get() == 0):
-                self.features = 'dog'
-                print(self.features)
-            elif(personVar.get() == 0) & (carVar.get() == 0) & (dogVar.get() == 0) & (catVar.get() == 1):
-                self.features = 'cat'
-                print(self.features)
+        self.thresholdVar = tkinter.StringVar()
+        self.thresholdVar.set(0.7) # default value
 
         selectFolderLabel = tkinter.Label(self, text = "Select Folder:")
         selectFolderLabel.grid(row=0,column=0)
@@ -147,7 +148,7 @@ class SearchFolderFrame(tkinter.Frame):
         featuresLabel.rowconfigure(1,weight=1)
 
         searchBtn = tkinter.Button(self,text="Search",
-                                   command=searchBtn)
+                                   command=lambda:self.searchBtn(controller))
         searchBtn.grid(row=3,column=1)
         searchBtn.columnconfigure(1,weight=1)
         searchBtn.rowconfigure(1,weight=1)
@@ -162,28 +163,194 @@ class SearchFolderFrame(tkinter.Frame):
         folderPathLabel.columnconfigure(1,weight=1)
         folderPathLabel.rowconfigure(1,weight=1)
 
-        personVar = tkinter.IntVar()
-        carVar = tkinter.IntVar()
-        dogVar = tkinter.IntVar()
-        catVar = tkinter.IntVar()
-        personCb = tkinter.Checkbutton(self, text='Person',variable=personVar, onvalue=1, offvalue=0, command=checkboxSelection)
-        carCb = tkinter.Checkbutton(self, text='Car',variable=carVar, onvalue=1, offvalue=0, command=checkboxSelection)
-        dogCb = tkinter.Checkbutton(self, text='Dog',variable=dogVar, onvalue=1, offvalue=0, command=checkboxSelection)
-        catCb = tkinter.Checkbutton(self, text='Cat',variable=catVar, onvalue=1, offvalue=0, command=checkboxSelection)
-        personCb.grid(row=2,column=1)
-        carCb.grid(row=2,column=2)
-        dogCb.grid(row=2,column=3)
-        catCb.grid(row=2,column=4)
+        self.personVar = tkinter.IntVar()
+        self.carVar = tkinter.IntVar()
+        self.dogVar = tkinter.IntVar()
+        self.catVar = tkinter.IntVar()
+        self.personCb = tkinter.Checkbutton(self, text='Person',variable=self.personVar, onvalue=1, offvalue=0, command=self.checkboxSelection)
+        self.carCb = tkinter.Checkbutton(self, text='Car',variable=self.carVar, onvalue=1, offvalue=0, command=self.checkboxSelection)
+        self.dogCb = tkinter.Checkbutton(self, text='Dog',variable=self.dogVar, onvalue=1, offvalue=0, command=self.checkboxSelection)
+        self.catCb = tkinter.Checkbutton(self, text='Cat',variable=self.catVar, onvalue=1, offvalue=0, command=self.checkboxSelection)
+        self.personCb.grid(row=2,column=1)
+        self.carCb.grid(row=2,column=2)
+        self.dogCb.grid(row=2,column=3)
+        self.catCb.grid(row=2,column=4)
 
-        thresholdVar = tkinter.StringVar()
-        thresholdVar.set(0.7) # default value
+        
 
-        thresholdSelection = tkinter.OptionMenu(self, thresholdVar, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
+        thresholdSelection = tkinter.OptionMenu(self, self.thresholdVar, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
         thresholdSelection.grid(row = 1, column = 1)
 
-        testinglabel = tkinter.Label(self, textvariable = thresholdVar)
+        testinglabel = tkinter.Label(self, textvariable = self.thresholdVar)
         testinglabel.grid(row = 4, column = 4)
+    
+    def searchBtn(self,controller):
+        file = self.filename.get()
+        thres =float(self.thresholdVar.get())
+        #print(thresholdVar.get())
+        print(thres)
+        photos = model.load_images(file)
+        answersPath = model.predict(photos,self.features,thres)
+        print('success')
+        print(answersPath)
+        self.finalImages = answersPath
+        controller.show_frame(ResultFrame)
 
+    def checkboxSelection(self):
+        #print("hello")
+        if(self.personVar.get() == 1) & (self.carVar.get() == 0) & (self.dogVar.get() == 0) & (self.catVar.get() == 0):
+            self.features = 'person'
+            print(self.features)
+        elif(self.personVar.get() == 0) & (self.carVar.get() == 1) & (self.dogVar.get() == 0) & (self.catVar.get() == 0):
+            self.features = 'car'
+            print(self.features)
+        elif(self.personVar.get() == 0) & (self.carVar.get() == 0) & (self.dogVar.get() == 1) & (self.catVar.get() == 0):
+            self.features = 'dog'
+            print(self.features)
+        elif(self.personVar.get() == 0) & (self.carVar.get() == 0) & (self.dogVar.get() == 0) & (self.catVar.get() == 1):
+            self.features = 'cat'
+            print(self.features)
+
+class Car(tkinter.Frame):
+    def __init__(self,parent, controller):
+        tkinter.Frame.__init__(self,parent)
+        
+        backBtn = tkinter.Button(self,text="Back",command=lambda:controller.show_frame(RecentlyAddedFrame))
+        backBtn.pack(side = tkinter.TOP,anchor="nw")
+
+        homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
+        homeBtn.pack(side =tkinter.TOP,anchor="ne")
+
+
+        
+
+        #self.images = fileMonitor.getImages(fileMonitor.openImageDirJson())
+        self.sortImage = fileMonitor.sortImages(fileMonitor.openImageDirJson())
+        model.files = self.sortImage
+        self.openSortImages = fileMonitor.openImageList(self.sortImage)
+        self.carPic = model.predict(self.openSortImages,'car')
+
+
+
+
+        my_canvas = tkinter.Canvas(self)
+        my_canvas.pack(side=tkinter.LEFT,fill=tkinter.BOTH, expand = 1)
+
+
+        my_scrollbar = ttk.Scrollbar(self,orient = tkinter.VERTICAL, command=my_canvas.yview)
+        my_scrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y)
+
+
+        my_canvas.configure(yscrollcommand=my_scrollbar.set)
+        my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion = my_canvas.bbox("all")))
+
+
+        secondFrame = tkinter.Frame(my_canvas)
+
+        my_canvas.create_window((0,0),window = secondFrame, anchor="nw")
+
+
+        self.photos = []
+        def open_image(imagePath):
+            if os.name == 'posix':
+                #rwre = ('"%s"' % imagePath)
+                #subprocess.call(['/usr/bin/open' ,rwre])
+                subprocess.run(['open', imagePath])
+            elif os.name == 'win32' :
+                subprocess.run(['explorer', imagePath])
+        #def displayImg(img):
+        for directories in self.carPic:
+            self.image = Image.open(directories)
+            self.image = self.image.resize((100,100))
+            self.photo = ImageTk.PhotoImage(self.image)
+            self.photos.append(self.photo)
+            #newPhoto_label = tkinter.Label(self,image=photo)
+            #newPhoto_label.pack()
+            newBtn = tkinter.Button(secondFrame,image = self.photo, command = lambda: open_image(directories))
+            newBtn.pack()
+
+        # for directories in self.carPic:
+        #     print(directories)
+        #     displayImg(directories) 
+
+
+class Dog(tkinter.Frame):
+    def __init__(self,parent, controller):
+        tkinter.Frame.__init__(self,parent)
+        
+        backBtn = tkinter.Button(self,text="Back",command=lambda:controller.show_frame(RecentlyAddedFrame))
+        backBtn.pack(side = tkinter.TOP,anchor="nw")
+
+        homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
+        homeBtn.pack(side =tkinter.TOP,anchor="ne")
+
+        my_canvas = tkinter.Canvas(self)
+        my_canvas.pack(side=tkinter.LEFT,fill=tkinter.BOTH, expand = 1)
+
+
+        my_scrollbar = ttk.Scrollbar(self,orient = tkinter.VERTICAL, command=my_canvas.yview)
+        my_scrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y)
+
+
+        my_canvas.configure(yscrollcommand=my_scrollbar.set)
+        my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion = my_canvas.bbox("all")))
+
+
+        secondFrame = tkinter.Frame(my_canvas)
+
+        my_canvas.create_window((0,0),window = secondFrame, anchor="nw")
+
+class Cat(tkinter.Frame):
+    def __init__(self,parent, controller):
+        tkinter.Frame.__init__(self,parent)
+
+        backBtn = tkinter.Button(self,text="Back",command=lambda:controller.show_frame(RecentlyAddedFrame))
+        backBtn.pack(side = tkinter.TOP,anchor="nw")
+
+        homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
+        homeBtn.pack(side =tkinter.TOP,anchor="ne")
+
+        my_canvas = tkinter.Canvas(self)
+        my_canvas.pack(side=tkinter.LEFT,fill=tkinter.BOTH, expand = 1)
+
+
+        my_scrollbar = ttk.Scrollbar(self,orient = tkinter.VERTICAL, command=my_canvas.yview)
+        my_scrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y)
+
+
+        my_canvas.configure(yscrollcommand=my_scrollbar.set)
+        my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion = my_canvas.bbox("all")))
+
+
+        secondFrame = tkinter.Frame(my_canvas)
+
+        my_canvas.create_window((0,0),window = secondFrame, anchor="nw")
+
+class Person(tkinter.Frame):
+    def __init__(self,parent, controller):
+        tkinter.Frame.__init__(self,parent)
+
+        backBtn = tkinter.Button(self,text="Back",command=lambda:controller.show_frame(RecentlyAddedFrame))
+        backBtn.pack(side = tkinter.TOP,anchor="nw")
+
+        homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
+        homeBtn.pack(side =tkinter.TOP,anchor="ne")
+
+        my_canvas = tkinter.Canvas(self)
+        my_canvas.pack(side=tkinter.LEFT,fill=tkinter.BOTH, expand = 1)
+
+
+        my_scrollbar = ttk.Scrollbar(self,orient = tkinter.VERTICAL, command=my_canvas.yview)
+        my_scrollbar.pack(side=tkinter.RIGHT,fill=tkinter.Y)
+
+
+        my_canvas.configure(yscrollcommand=my_scrollbar.set)
+        my_canvas.bind('<Configure>', lambda e: my_canvas.configure(scrollregion = my_canvas.bbox("all")))
+
+
+        secondFrame = tkinter.Frame(my_canvas)
+
+        my_canvas.create_window((0,0),window = secondFrame, anchor="nw")
 
 class ResultFrame(tkinter.Frame):
     
@@ -192,11 +359,17 @@ class ResultFrame(tkinter.Frame):
         #self.path = tkinter.StringVar()
         print(os.name)
         
-        if(controller.visible == 'SplashScreenFrame'):
-            print(self.path)
-        else:
-            print("different frame")
-            print(controller.visible)
+        # if(controller.visible == 'SplashScreenFrame'):
+        #     print(self.path)
+        # else:
+        #     print("different frame")
+        #     print(controller.visible)
+        backBtn = tkinter.Button(self,text="Back",command=lambda:controller.show_frame(SearchFolderFrame))
+        backBtn.pack(side = tkinter.TOP,anchor="nw")
+
+        homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
+        homeBtn.pack(side =tkinter.TOP,anchor="ne")
+
         photos = []
         def open_image(imagePath):
             if os.name == 'posix':

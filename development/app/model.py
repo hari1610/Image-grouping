@@ -41,16 +41,19 @@ files = []
 #imgs = []
 feature = 'dog'
 
-pathrere = "/Users/hari/Desktop/image grouping/images"
+pathrere = "/Users/hari/Downloads"
 #valid_images = [".jpg",".gif",".png",".jpeg"]
 def load_images(path,valid_images = [".jpg",".gif",".png",".jpeg"]):
     imgs = []
     for f in os.listdir(path):
         files.append(os.path.join(path,f))
         ext = os.path.splitext(f)[1]
+        
         if ext.lower() not in valid_images:
+            print(ext)
             continue
         imgs.append(Image.open(os.path.join(path,f)))
+    print(imgs)
     return imgs
 # print(len(imgs))
 # for i in range(len(imgs)):
@@ -62,6 +65,7 @@ def predict(imgs,feat,threshold=0.7):
     print(len(imgs))
     pather = []
     for i in range(len(imgs)):
+    
         
         transform = transforms.Compose([transforms.ToTensor()])
         imgs[i] = transform(imgs[i])
@@ -81,7 +85,7 @@ def predict(imgs,feat,threshold=0.7):
                 print("feature found")
                 #pic = Image.open(files[i])
                 pather.append(files[i])
-                print(pather)
+                #print(pather)
                 #plt.imshow(pic)
                 #plt.show()
                 #return pred_class,pred_score
@@ -95,5 +99,6 @@ def predict(imgs,feat,threshold=0.7):
 #print(get)
 #print(pather)
 
-#a = load_images(pathrere)
+# a = load_images(pathrere)
+# get = predict(a,feature)
 #print(len(a))
