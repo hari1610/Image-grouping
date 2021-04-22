@@ -8,6 +8,14 @@ from tkinter import ttk
 import fileMonitor
 
 class ImageGroupingApp(tkinter.Tk):
+    """
+    This class is used to create all the frames of the application and display them to the user.
+
+    Methods
+    -------
+    show_frame(self,cont)
+        displays the frame so the user can see.
+    """
     #initalise variables in the class
     def __init__(self, *args, **kwargs):
         #initalise tkinter
@@ -38,39 +46,103 @@ class ImageGroupingApp(tkinter.Tk):
         
     #creating a method to show frames
     def show_frame(self,cont):
+        """Brings a frame to the front so the user can see
+
+        Parameters
+        ----------
+        cont: class
+            The frame class that will be displayed on top
+        
+        Attributes
+        ----------
+        frame : class
+            Takes in the frame that needs to be pushed to the front of display
+
+        """
         frame = self.frames[cont]
-        self.visible.set(frame)
+        #self.visible.set(frame)
         frame.tkraise()
 
 
 class SplashScreenFrame(tkinter.Frame):
+    """
+    This class creates the first screen the user sees when the programme is run.
+    This class allows the user to change the image directory for the recently added file location
+    and start the application
+
+    Attributes
+    ----------
+    searchBtn : Button
+        creates a clickable search button
+    startBtn : Button
+        creates a clickable start application button
+    
+    Methods
+    -------
+    select_folder()
+        method for the select folder button, sets a directory for the application to search through
+    """
 
     def __init__(self,parent, controller):
+        """
+        Parameters
+        ----------
+        parent
+        controller
+        """
+
         tkinter.Frame.__init__(self,parent)
         label = tkinter.Label(self, text= "Welcome to the Image Grouping Application")
         label.pack()
         
+        # self.sortImage = fileMonitor.sortImages(fileMonitor.openImageDirJson())
+        # model.files = self.sortImage
+        # print(model.files)
+        # self.openSortImages = fileMonitor.openImageList(self.sortImage)
+        # model.predictForRecentFrame(self.openSortImages)
         
-        
-        self.searchBtn = tkinter.Button(self,text= "Please Select a Default Folder to Search", command = self.select_folder)
-        self.searchBtn.pack()
+        self.selectFolderBtn = tkinter.Button(self,text= "Please Select a Default Folder to Search", command = self.select_folder)
+        self.selectFolderBtn.pack()
 
         self.startBtn = tkinter.Button(self, text="Start App",
                                  command=lambda: controller.show_frame(MainMenuFrame))
         self.startBtn.pack()
     
     def select_folder(self):
-            filepath = tkinter.filedialog.askdirectory()
-            a = str(filepath)
-            print(a)
-            f = open("pathway.txt","w")
-            f.write(str(a))
-            f.close()
-            print("created file")
+        """Opens a file explorer or finder window for the user to select a directory.
+
+        """
+
+        filepath = tkinter.filedialog.askdirectory()
+        # a = str(filepath)
+        # print(a)
+        # f = open("pathway.txt","w")
+        # f.write(str(a))
+        # f.close()
+        strFilepath = str(filepath)
+        fileMonitor.getPathDirectory(strFilepath)
+        print("file change complete")
 
 
 class MainMenuFrame(tkinter.Frame):
+    """
+    This is the frame where the user gets to select between searching through a folder or a recently 
+    added images
+
+    Attributes
+    ----------
+    mainMenuLabel : Label
+        a text that displays the text main menu on the frame
+    recentlyAddedBtn : Button
+        creates a clickable recently added button for the recently added frame
+    searchFolderBtn : Button
+        creates a clickable search folder button for the search folder frame
+    """
     def __init__(self,parent, controller):
+        """
+        Parameters
+        ----------
+        """
         tkinter.Frame.__init__(self,parent)
         
         #creating a text that says Main Menu
@@ -86,7 +158,30 @@ class MainMenuFrame(tkinter.Frame):
         searchFolderBtn.pack()
 
 class RecentlyAddedFrame(tkinter.Frame):
+    """
+    This is the frame where the user gets to select the features they want to see the pictures from
+
+    Attributes
+    ----------
+    backBtn : Button
+        creates a clickable button to go back to the previous frame
+    homeBtn : Button
+        creates a clickable button to go to the main menu frame
+    dogsBtn : Button
+        creates a clickable button to go to the dogs frame
+    catsBtn : Button
+        creates a clickable button to go to the cats frame
+    carsBtn : Button
+        creates a clickable button to go to the cars frame
+    personsBtn : Button
+        creates a clickable button to go to the persons frame
+    """
     def __init__(self,parent, controller):
+        """
+        Parameters
+        ----------
+
+        """
         tkinter.Frame.__init__(self,parent)
     
         backBtn = tkinter.Button(self,text="Back",command=lambda:controller.show_frame(MainMenuFrame))
@@ -108,6 +203,19 @@ class RecentlyAddedFrame(tkinter.Frame):
         personsBtn.pack()
 
 class SearchFolderFrame(tkinter.Frame):
+    """
+    This frame displays all the attributes needs so the user can search a directory with a specified
+    feature and threshold limit
+
+    Attributes
+    ----------
+    filname : stringVar
+        a  variable string to store the directory path
+    features : str
+        the feature to look for in an image
+    finalImages : list
+
+    """
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
 
@@ -181,8 +289,8 @@ class SearchFolderFrame(tkinter.Frame):
         thresholdSelection = tkinter.OptionMenu(self, self.thresholdVar, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
         thresholdSelection.grid(row = 1, column = 1)
 
-        testinglabel = tkinter.Label(self, textvariable = self.thresholdVar)
-        testinglabel.grid(row = 4, column = 4)
+        # testinglabel = tkinter.Label(self, textvariable = self.thresholdVar)
+        # testinglabel.grid(row = 4, column = 4)
     
     def searchBtn(self,controller):
         file = self.filename.get()
@@ -224,11 +332,12 @@ class Car(tkinter.Frame):
 
         
 
-        #self.images = fileMonitor.getImages(fileMonitor.openImageDirJson())
+        
         self.sortImage = fileMonitor.sortImages(fileMonitor.openImageDirJson())
         model.files = self.sortImage
         self.openSortImages = fileMonitor.openImageList(self.sortImage)
-        self.carPic = model.predict(self.openSortImages,'car')
+        self.car = model.predict(self.openSortImages,'car')
+        #self.car = model.getCar()
 
 
 
@@ -259,7 +368,7 @@ class Car(tkinter.Frame):
             elif os.name == 'win32' :
                 subprocess.run(['explorer', imagePath])
         #def displayImg(img):
-        for directories in self.carPic:
+        for directories in self.car:
             self.image = Image.open(directories)
             self.image = self.image.resize((100,100))
             self.photo = ImageTk.PhotoImage(self.image)
@@ -284,6 +393,14 @@ class Dog(tkinter.Frame):
         homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
         homeBtn.pack(side =tkinter.TOP,anchor="ne")
 
+        self.sortImage = fileMonitor.sortImages(fileMonitor.openImageDirJson())
+        model.files = self.sortImage
+        self.openSortImages = fileMonitor.openImageList(self.sortImage)
+        self.dog = model.predict(self.openSortImages,'dog')
+        #self.dog = model.getDog()
+
+
+
         my_canvas = tkinter.Canvas(self)
         my_canvas.pack(side=tkinter.LEFT,fill=tkinter.BOTH, expand = 1)
 
@@ -299,6 +416,26 @@ class Dog(tkinter.Frame):
         secondFrame = tkinter.Frame(my_canvas)
 
         my_canvas.create_window((0,0),window = secondFrame, anchor="nw")
+
+
+        self.photos = []
+        def open_image(imagePath):
+            if os.name == 'posix':
+                #rwre = ('"%s"' % imagePath)
+                #subprocess.call(['/usr/bin/open' ,rwre])
+                subprocess.run(['open', imagePath])
+            elif os.name == 'win32' :
+                subprocess.run(['explorer', imagePath])
+        #def displayImg(img):
+        for directories in self.dog:
+            self.image = Image.open(directories)
+            self.image = self.image.resize((100,100))
+            self.photo = ImageTk.PhotoImage(self.image)
+            self.photos.append(self.photo)
+            #newPhoto_label = tkinter.Label(self,image=photo)
+            #newPhoto_label.pack()
+            newBtn = tkinter.Button(secondFrame,image = self.photo, command = lambda: open_image(directories))
+            newBtn.pack()
 
 class Cat(tkinter.Frame):
     def __init__(self,parent, controller):
@@ -310,6 +447,15 @@ class Cat(tkinter.Frame):
         homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
         homeBtn.pack(side =tkinter.TOP,anchor="ne")
 
+        self.sortImage = fileMonitor.sortImages(fileMonitor.openImageDirJson())
+        model.files = self.sortImage
+        self.openSortImages = fileMonitor.openImageList(self.sortImage)
+        self.cat = model.predict(self.openSortImages,'cat')
+        #self.cat = model.getCat()
+
+
+
+
         my_canvas = tkinter.Canvas(self)
         my_canvas.pack(side=tkinter.LEFT,fill=tkinter.BOTH, expand = 1)
 
@@ -325,6 +471,26 @@ class Cat(tkinter.Frame):
         secondFrame = tkinter.Frame(my_canvas)
 
         my_canvas.create_window((0,0),window = secondFrame, anchor="nw")
+
+
+        self.photos = []
+        def open_image(imagePath):
+            if os.name == 'posix':
+                #rwre = ('"%s"' % imagePath)
+                #subprocess.call(['/usr/bin/open' ,rwre])
+                subprocess.run(['open', imagePath])
+            elif os.name == 'win32' :
+                subprocess.run(['explorer', imagePath])
+        #def displayImg(img):
+        for directories in self.cat:
+            self.image = Image.open(directories)
+            self.image = self.image.resize((100,100))
+            self.photo = ImageTk.PhotoImage(self.image)
+            self.photos.append(self.photo)
+            #newPhoto_label = tkinter.Label(self,image=photo)
+            #newPhoto_label.pack()
+            newBtn = tkinter.Button(secondFrame,image = self.photo, command = lambda: open_image(directories))
+            newBtn.pack()
 
 class Person(tkinter.Frame):
     def __init__(self,parent, controller):
@@ -336,6 +502,15 @@ class Person(tkinter.Frame):
         homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
         homeBtn.pack(side =tkinter.TOP,anchor="ne")
 
+        self.sortImage = fileMonitor.sortImages(fileMonitor.openImageDirJson())
+        model.files = self.sortImage
+        self.openSortImages = fileMonitor.openImageList(self.sortImage)
+        self.person = model.predict(self.openSortImages,'person')
+        #self.person = model.getPerson()
+
+
+
+
         my_canvas = tkinter.Canvas(self)
         my_canvas.pack(side=tkinter.LEFT,fill=tkinter.BOTH, expand = 1)
 
@@ -351,6 +526,26 @@ class Person(tkinter.Frame):
         secondFrame = tkinter.Frame(my_canvas)
 
         my_canvas.create_window((0,0),window = secondFrame, anchor="nw")
+
+
+        self.photos = []
+        def open_image(imagePath):
+            if os.name == 'posix':
+                #rwre = ('"%s"' % imagePath)
+                #subprocess.call(['/usr/bin/open' ,rwre])
+                subprocess.run(['open', imagePath])
+            elif os.name == 'win32' :
+                subprocess.run(['explorer', imagePath])
+        #def displayImg(img):
+        for directories in self.person:
+            self.image = Image.open(directories)
+            self.image = self.image.resize((100,100))
+            self.photo = ImageTk.PhotoImage(self.image)
+            self.photos.append(self.photo)
+            #newPhoto_label = tkinter.Label(self,image=photo)
+            #newPhoto_label.pack()
+            newBtn = tkinter.Button(secondFrame,image = self.photo, command = lambda: open_image(directories))
+            newBtn.pack()
 
 class ResultFrame(tkinter.Frame):
     
