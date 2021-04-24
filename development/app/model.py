@@ -116,7 +116,17 @@ def load_images(path,valid_images = [".jpg",".gif",".png",".jpeg"]):
 
 def predict(imgs,feat,threshold=0.7):
     """
-    puts each
+    puts each image through the Faster R-CNN model and then returns a list of image path 
+    with that feature.
+
+    Parameters
+    ----------
+    imgs : list
+        list of images
+    feat : str
+        what feature to look for in an image
+    threshold : float, optional
+        the required accuracy of the feature in that image 
     """
 
     print(len(imgs))

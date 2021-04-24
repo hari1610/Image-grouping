@@ -50,14 +50,20 @@ def openImageDirJson():
 
 def getImages(dir,valid_images = [".jpg",".gif",".png",".jpeg"]):
     images=[]
+    # if not images:
+    #     print("the list is empty")
+    #     return None
+        
+
     for f in os.listdir(dir):
         #files.append(os.path.join(dir,f))
         ext = os.path.splitext(f)[1]
         
         if ext.lower() not in valid_images:
             print(ext)
-            continue
-        images.append(os.path.join(dir,f))
+        if ext.lower() in valid_images:
+            images.append(os.path.join(dir,f))
+    
     return images
 
 def setOriginalJsonImageData():
@@ -108,7 +114,12 @@ def sortImages(direc):
         imgStat = os.path.join(direc,i)
         print(imgStat)
         print(time.ctime(os.path.getctime(imgStat)))
+        print("now to print out in order:")
+        for x in range(len(lists)):
+            print(lists[x])
+            print(time.ctime(os.path.getctime(lists[x])))
     return lists
+
     # return list
     
 def openImageList(imageList):
@@ -119,12 +130,12 @@ def openImageList(imageList):
 
 
 
-#getPathDirectory(folderPathway)
+#a=getPathDirectory(folderPathway)
 #setOriginalJsonImageData()
 #getNewJsonImageData()
 #compareImageFile()
-a = sortImages(folderPathway)
-print(a)
+#a = sortImages(folderPathway)
+#print(a)
 # json_file = open("/Users/hari/Desktop/image grouping/Code/Image-grouping/development/app/imagesDir.txt","w")
 # json.dump(folderPathway,json_file)
 # json_file.close()

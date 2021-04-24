@@ -219,11 +219,11 @@ class SearchFolderFrame(tkinter.Frame):
     def __init__(self,parent, controller):
         tkinter.Frame.__init__(self,parent)
 
-        # backBtn = tkinter.Button(self,text="Back",command=lambda:controller.show_frame(MainMenuFrame))
-        # backBtn.pack(side = tkinter.TOP,anchor="nw")
+        backBtn = tkinter.Button(self,text="Back",command=lambda:controller.show_frame(MainMenuFrame))
+        backBtn.grid(row=0,column=0,sticky="w")
 
-        # homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
-        # homeBtn.pack(side =tkinter.TOP,anchor="ne")
+        homeBtn = tkinter.Button(self,text="Home",command=lambda:controller.show_frame(MainMenuFrame))
+        homeBtn.grid(row=0,column=0,sticky="e")
         
         self.filename = tkinter.StringVar()
         self.features = ''
@@ -241,33 +241,33 @@ class SearchFolderFrame(tkinter.Frame):
         self.thresholdVar.set(0.7) # default value
 
         selectFolderLabel = tkinter.Label(self, text = "Select Folder:")
-        selectFolderLabel.grid(row=0,column=0)
+        selectFolderLabel.grid(row=1,column=1)
         selectFolderLabel.columnconfigure(1,weight=1)
         selectFolderLabel.rowconfigure(1,weight=1)
 
         thresholdLabel = tkinter.Label(self, text = "Threshold(%):")
-        thresholdLabel.grid(row=1,column=0)
+        thresholdLabel.grid(row=2,column=1)
         thresholdLabel.columnconfigure(1,weight=1)
         thresholdLabel.rowconfigure(1,weight=1)
 
         featuresLabel = tkinter.Label(self, text = "Features:")
-        featuresLabel.grid(row=2,column=0)
+        featuresLabel.grid(row=3,column=1)
         featuresLabel.columnconfigure(1,weight=1)
         featuresLabel.rowconfigure(1,weight=1)
 
         searchBtn = tkinter.Button(self,text="Search",
                                    command=lambda:self.searchBtn(controller))
-        searchBtn.grid(row=3,column=1)
+        searchBtn.grid(row=4,column=2)
         searchBtn.columnconfigure(1,weight=1)
         searchBtn.rowconfigure(1,weight=1)
 
         selectFolderBtn = tkinter.Button(self,text="...",command = select_folder)
-        selectFolderBtn.grid(row=0,column=2)
+        selectFolderBtn.grid(row=1,column=3)
         selectFolderBtn.columnconfigure(1,weight=1)
         selectFolderBtn.rowconfigure(1,weight=1)
 
         folderPathLabel = tkinter.Label(self, textvariable = self.filename)
-        folderPathLabel.grid(row=0,column=1)
+        folderPathLabel.grid(row=1,column=2)
         folderPathLabel.columnconfigure(1,weight=1)
         folderPathLabel.rowconfigure(1,weight=1)
 
@@ -279,15 +279,15 @@ class SearchFolderFrame(tkinter.Frame):
         self.carCb = tkinter.Checkbutton(self, text='Car',variable=self.carVar, onvalue=1, offvalue=0, command=self.checkboxSelection)
         self.dogCb = tkinter.Checkbutton(self, text='Dog',variable=self.dogVar, onvalue=1, offvalue=0, command=self.checkboxSelection)
         self.catCb = tkinter.Checkbutton(self, text='Cat',variable=self.catVar, onvalue=1, offvalue=0, command=self.checkboxSelection)
-        self.personCb.grid(row=2,column=1)
-        self.carCb.grid(row=2,column=2)
-        self.dogCb.grid(row=2,column=3)
-        self.catCb.grid(row=2,column=4)
+        self.personCb.grid(row=3,column=2)
+        self.carCb.grid(row=3,column=3)
+        self.dogCb.grid(row=3,column=4)
+        self.catCb.grid(row=3,column=5)
 
         
 
         thresholdSelection = tkinter.OptionMenu(self, self.thresholdVar, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1)
-        thresholdSelection.grid(row = 1, column = 1)
+        thresholdSelection.grid(row = 2, column = 2)
 
         # testinglabel = tkinter.Label(self, textvariable = self.thresholdVar)
         # testinglabel.grid(row = 4, column = 4)
