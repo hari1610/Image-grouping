@@ -12,7 +12,8 @@ getPerson() - returns a list of paths to an image containing person
 getCat() - returns a list of paths to an image containing cat
 load_images() - returns a list of all the images in an directory
 predict() - returns a set of image paths that have the same features
-predictForRecentFrame() - appends the dog,car,person and cat lists with their appropriate image paths
+predictForRecentFrame() - appends the dog,car,person and cat lists with their appropriate image paths. however
+                            this class doesnt currently work
 """
 import torch
 import torchvision
@@ -39,15 +40,28 @@ COCO_INSTANCE_CATEGORY_NAMES = [
     'microwave', 'oven', 'toaster', 'sink', 'refrigerator', 'N/A', 'book',
     'clock', 'vase', 'scissors', 'teddy bear', 'hair drier', 'toothbrush'
 ]
-threshold = 0.7
-imgDir = ""
+threshold = 0.7 # this is the defualt threshold value when nothing is entered
+imgDir = "" # creating an empty string to hold the images folder directory
+
+
 def transformImgToTensor(image):
+    """
+    gets an image file and turns it into an tensor. Then returns the tensor
+    """
     transform = transforms.Compose([transforms.ToTensor()])
     return transform(image)
 def set_ImgPath(self,imgPath):
+    """
+    get the image path and sets it to imgDir
+
+    parameters
+    ----------
+    imgPath : string
+        the path to the image folder
+    """
     imgDir = imgPath
     
-PATH = "/Users/hari/Desktop/image grouping/FRCNN.pth"
+PATH = "/Users/hari/Desktop/image grouping/FRCNN.pth" #location of the faster R-CNN model
 
 model = torch.load(PATH) #load in the faster R-CNN model
 model.eval()#put the model in evaluation mode
@@ -127,7 +141,13 @@ def predict(imgs,feat,threshold=0.7):
         what feature to look for in an image
     threshold : float, optional
         the required accuracy of the feature in that image 
+
+    Returns
+    -------
+    pather
+        a list of all the images path which contain the feature and it is over the threshold value
     """
+    
 
     print(len(imgs))
     pather = []
@@ -136,9 +156,9 @@ def predict(imgs,feat,threshold=0.7):
         
         transform = transforms.Compose([transforms.ToTensor()])
         imgs[i] = transform(imgs[i])
-        pred = model([imgs[i]])
+        pred = model([imgs[i]])#transforms the image into tensor
         pred_class = [COCO_INSTANCE_CATEGORY_NAMES[i] for i in list(pred[0]['labels'].numpy())] # Get the Prediction Score
-        pred_score = list(pred[0]['scores'].detach().numpy())#?
+        pred_score = list(pred[0]['scores'].detach().numpy())
         pred_t = [pred_score.index(x) for x in pred_score if x > threshold][-1] # Get list of index with score greater than threshold.
         pred_class = pred_class[:pred_t+1]
         pred_score = pred_score[:pred_t+1]

@@ -1,7 +1,19 @@
-"""
-create directory json file and save
-store all the images in that directory in a seperate txt file
-search through the directory for recently added images
+"""fileMonitor
+This module is used to create and load json files which contains the path to default images
+directory. This module is required for the recently loaded feature of the application
+
+This model requires os,json,time, Image and the model Library
+
+functions
+--------
+getPathDirectory()
+openImageDirJson()
+getImages()
+setOriginalJsonImageData()
+getNewJsonImageData()
+compareImageFile()
+sortImages()
+openImageList()
 
 """
 import os
@@ -10,16 +22,29 @@ import model
 import time
 from PIL import Image
 #folderPathway = []
-folderPathway = '/Users/hari/Desktop/image grouping/images'
+#folderPathway = '/Users/hari/Desktop/image grouping/images'
+#filepathdd= "/Users/hari/Desktop/image grouping/Code/Image-grouping/development/app/imagesDir.txt"
+
+scriptDir=os.path.dirname(__file__)  
+relPath = 'imagesDir.txt'
+try:
+    fullFilePath = os.path.join(scriptDir,relPath)
+except:
+    print("file doesnt exist")
+    f = open("imagesDir.txt","w")
+    f.close()
+    
 
 def getPathDirectory(folderPath):
-    if os.path.exists('/Users/hari/Desktop/image grouping/Code/Image-grouping/development/app/imagesDir.txt'):
+    
+    if os.path.exists(fullFilePath):
         print("file exists")
         #f = open("/Users/hari/Desktop/image grouping/Code/Image-grouping/development/app/imagesDir.txt","r" )
         #print(f.read())
         #rere = f.read()
         #.join(rere)
-        read_json = open("/Users/hari/Desktop/image grouping/Code/Image-grouping/development/app/imagesDir.txt","r")
+        read_json = open(fullFilePath,"r")
+        print(read_json)
         pathJson = json.load(read_json)
         print(pathJson)
         print("whats in the text file:")        
@@ -28,13 +53,13 @@ def getPathDirectory(folderPath):
             print("the path in the file is the same")
         else:
             read_json.close()
-            f = open("/Users/hari/Desktop/image grouping/Code/Image-grouping/development/app/imagesDir.txt","w")
+            f = open(fullFilePath,"w")
             json.dump(folderPath,f)
             print("wrote the path to the text file")
             f.close()    
     
     else:
-        f = open("/Users/hari/Desktop/image grouping/Code/Image-grouping/development/app/imagesDir.txt","w")
+        f = open("imagesDir.txt","w")
         # f.write("hello")
         # print(f.readlines())
         # f.close()
@@ -43,7 +68,7 @@ def getPathDirectory(folderPath):
         f.close()  
 
 def openImageDirJson():
-    f = open("/Users/hari/Desktop/image grouping/Code/Image-grouping/development/app/imagesDir.txt","r")
+    f = open(fullFilePath,"r")
     pathJson = json.load(f)
     f.close()
     return pathJson
@@ -147,3 +172,6 @@ def openImageList(imageList):
 #     print("its the same")
 # else:
 #     print("I fucked up")
+
+
+#getPathDirectory(folderPathway)

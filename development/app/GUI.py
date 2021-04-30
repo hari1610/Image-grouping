@@ -30,7 +30,7 @@ class ImageGroupingApp(tkinter.Tk):
 
         #specifing a dictionary that contains all the frames
         self.frames = {}
-        self.visible =tkinter.StringVar()
+        #self.visible =tkinter.StringVar()
 
         for F in (SplashScreenFrame, MainMenuFrame,SearchFolderFrame,ResultFrame,RecentlyAddedFrame,Car,Dog,Cat,Person):
             #setting frame to the first frame the user sees
@@ -92,8 +92,8 @@ class SplashScreenFrame(tkinter.Frame):
         """
 
         tkinter.Frame.__init__(self,parent)
-        label = tkinter.Label(self, text= "Welcome to the Image Grouping Application")
-        label.pack()
+        welcomeLabel = tkinter.Label(self, text= "Welcome to the Image Grouping Application")
+        welcomeLabel.pack()
         
         # self.sortImage = fileMonitor.sortImages(fileMonitor.openImageDirJson())
         # model.files = self.sortImage
@@ -375,8 +375,8 @@ class Car(tkinter.Frame):
             self.photos.append(self.photo)
             #newPhoto_label = tkinter.Label(self,image=photo)
             #newPhoto_label.pack()
-            newBtn = tkinter.Button(secondFrame,image = self.photo, command = lambda: open_image(directories))
-            newBtn.pack()
+            pictureBtn = tkinter.Button(secondFrame,image = self.photo, command = lambda: open_image(directories))
+            pictureBtn.pack()
 
         # for directories in self.carPic:
         #     print(directories)
@@ -434,8 +434,8 @@ class Dog(tkinter.Frame):
             self.photos.append(self.photo)
             #newPhoto_label = tkinter.Label(self,image=photo)
             #newPhoto_label.pack()
-            newBtn = tkinter.Button(secondFrame,image = self.photo, command = lambda: open_image(directories))
-            newBtn.pack()
+            pictureBtn = tkinter.Button(secondFrame,image = self.photo, command = lambda: open_image(directories))
+            pictureBtn.pack()
 
 class Cat(tkinter.Frame):
     def __init__(self,parent, controller):
